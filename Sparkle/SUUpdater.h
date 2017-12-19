@@ -232,8 +232,11 @@ SU_EXPORT @interface SUUpdater : NSObject
 
 /*!
  Only valid if current driver is SUUIBasedUpdateDriver
+ TODO: documentation/refactoring
  */
 -(void)showUpdateWindow;
+
+-(void)downloadCurrentUpdate;
 
 @end
 

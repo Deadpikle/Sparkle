@@ -37,6 +37,8 @@
 
 @property (nonatomic) SUUpdateValidator *updateValidator;
 
+@property BOOL didSuccessfullyFinishDownload;
+
 @end
 
 @implementation SUBasicUpdateDriver
@@ -49,6 +51,7 @@
 @synthesize tempDir;
 @synthesize relaunchPath;
 
+@synthesize didSuccessfullyFinishDownload;
 @synthesize updateValidator = _updateValidator;
 
 - (void)checkForUpdatesAtURL:(NSURL *)URL host:(SUHost *)aHost
@@ -307,8 +310,27 @@
 - (void)downloadDidFinish:(NSURLDownload *)__unused d
 {
     assert(self.updateItem);
+    id<SUUpdaterPrivate> updater = self.updater;
 
-    [self extractUpdate];
+    BOOL shouldExtract = YES;
+    if ([[updater delegate] respondsToSelector:@selector(updater:shouldSilentlyDownloadItem:)]) {
+        if ([[updater delegate] updater:self.updater shouldSilentlyDownloadItem:self.updateItem]) {
+            shouldExtract = NO;
+        }
+    }
+    
+    if (shouldExtract) {
+        [self extractUpdate];
+    }
+    // else we will tell user it is downloaded and let them handle it
+    self.didSuccessfullyFinishDownload = YES;
+    if ([[updater delegate] respondsToSelector:@selector(updater:finishedDownloadingItem:)]) {
+        [[updater delegate] updater:self.updater finishedDownloadingItem:self.updateItem];       
+    }
+}
+
+-(BOOL)hasFinishedDownloadSuccessfully {
+    return self.didSuccessfullyFinishDownload;
 }
 
 - (void)download:(NSURLDownload *)__unused download didFailWithError:(NSError *)error

@@ -12,6 +12,8 @@
 #import "SUHost.h"
 #import "SULocalizations.h"
 #import "SUApplicationInfo.h"
+#import "SUUpdaterPrivate.h"
+#import "SUUpdaterDelegate.h"
 
 @interface SUUserInitiatedUpdateDriver ()
 
@@ -44,9 +46,18 @@
 {
     self.checkingController = [[SUStatusController alloc] initWithHost:aHost];
     [[self.checkingController window] center]; // Force the checking controller to load its window.
-    [self.checkingController beginActionWithTitle:SULocalizedString(@"Checking for updates...", nil) maxProgressValue:0.0 statusText:nil];
-    [self.checkingController setButtonTitle:SULocalizedString(@"Cancel", nil) target:self action:@selector(cancelCheckForUpdates:) isDefault:NO];
-    [self.checkingController showWindow:self];
+    
+    id<SUUpdaterPrivate> updater = self.updater;
+    BOOL showController = YES;
+    if ([[updater delegate] respondsToSelector:@selector(shouldSilentlyDownloadAppCastForUpdater:)]) {
+        showController = [[updater delegate] respondsToSelector:@selector(shouldSilentlyDownloadAppCastForUpdater:)];
+    }
+    if (showController) {
+        [self.checkingController beginActionWithTitle:SULocalizedString(@"Checking for updates...", nil) maxProgressValue:0.0 statusText:nil];
+        [self.checkingController setButtonTitle:SULocalizedString(@"Cancel", nil) target:self action:@selector(cancelCheckForUpdates:) isDefault:NO];
+        [self.checkingController showWindow:self];
+    }
+    
     [super checkForUpdatesAtURL:URL host:aHost];
 
     // For background applications, obtain focus.

@@ -76,6 +76,13 @@
     if (showUpdateAlert) {
         [self showUpdateAlert];
     }
+    else {
+        if ([[updater delegate] respondsToSelector:@selector(updater:shouldSilentlyDownloadItem:)]) {
+            if ([[updater delegate] updater:self.updater shouldSilentlyDownloadItem:self.updateItem]) {
+                [super downloadUpdate]; // super -> will be silent
+            }
+        }
+    }
 }
 
 -(void)showUpdateAlert
@@ -108,6 +115,10 @@
         [window makeKeyAndOrderFront:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:NSApplicationDidBecomeActiveNotification object:NSApp];
+    }
+    
+    if ([super hasFinishedDownloadSuccessfully]) {
+        //self.updateAlert.
     }
 }
 

@@ -123,6 +123,11 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
 
 - (BOOL)updater:(SUUpdater *)updater shouldImmediatelyShowAlertWindowForItem:(SUAppcastItem *)item;
 
+- (BOOL)shouldSilentlyDownloadAppCastForUpdater:(SUUpdater*)updater;
+- (BOOL)updater:(SUUpdater *)updater shouldSilentlyDownloadItem:(SUAppcastItem *)item;
+- (void)updater:(SUUpdater *)updater finishedDownloadingItem:(SUAppcastItem *)item;
+// TODO: hasFinishedDownload or something on the drivers so the UI can be adjusted accordingly
+
 /*!
  Called when a valid update is not found.
  

@@ -50,6 +50,8 @@
 - (void)abortUpdateWithError:(NSError *)error;
 - (void)terminateApp;
 
+-(BOOL)hasFinishedDownloadSuccessfully;
+
 @end
 
 #endif

@@ -594,8 +594,13 @@ static NSString *escapeURLComponent(NSString *str) {
 
 -(void)showUpdateWindow {
     if (self.driver && [self.driver isKindOfClass:[SUUIBasedUpdateDriver class]]) {
-        SUUIBasedUpdateDriver *uiDriver = (SUUIBasedUpdateDriver*)self.driver;
-        [uiDriver showUpdateAlert];
+        [(SUUIBasedUpdateDriver*)self.driver showUpdateAlert];
+    }
+}
+
+-(void)downloadCurrentUpdate {
+    if (self.driver && [self.driver isKindOfClass:[SUBasicUpdateDriver class]]) {
+        [(SUBasicUpdateDriver*)self.driver downloadUpdate];
     }
 }
 
