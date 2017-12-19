@@ -178,6 +178,11 @@ static NSString *const SUUpdateAlertTouchBarIndentifier = @"" SPARKLE_BUNDLE_IDE
 
 - (BOOL)allowsAutomaticUpdates
 {
+    if ([self.host objectForInfoDictionaryKey:SUShowAutoUpdateInUserWindowKey] &&
+        ![self.host boolForKey:SUShowAutoUpdateInUserWindowKey])
+    {
+        return NO;
+    }
     return [SUSystemUpdateInfo systemAllowsAutomaticUpdatesForHost:self.host]
             && !self.updateItem.isInformationOnlyUpdate;
 }
