@@ -50,7 +50,7 @@
     id<SUUpdaterPrivate> updater = self.updater;
     BOOL showController = YES;
     if ([[updater delegate] respondsToSelector:@selector(shouldSilentlyDownloadAppCastForUpdater:)]) {
-        showController = [[updater delegate] respondsToSelector:@selector(shouldSilentlyDownloadAppCastForUpdater:)];
+        showController = ![[updater delegate] respondsToSelector:@selector(shouldSilentlyDownloadAppCastForUpdater:)];
     }
     if (showController) {
         [self.checkingController beginActionWithTitle:SULocalizedString(@"Checking for updates...", nil) maxProgressValue:0.0 statusText:nil];

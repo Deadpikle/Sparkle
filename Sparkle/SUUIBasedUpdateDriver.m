@@ -188,15 +188,24 @@
         createdStatusController = YES;
     }
     
-    [self.statusController beginActionWithTitle:SULocalizedString(@"Downloading update...", @"Take care not to overflow the status window.") maxProgressValue:0.0 statusText:nil];
-    [self.statusController setButtonTitle:SULocalizedString(@"Cancel", nil) target:self action:@selector(cancelDownload:) isDefault:NO];
-    [self.statusController setButtonEnabled:YES];
-    
-    if (createdStatusController) {
-        [self.statusController showWindow:self];
+    if ([super hasFinishedDownloadSuccessfully]) {
+        [self extractUpdate];
+        if (createdStatusController) {
+            [self.statusController showWindow:self];
+        }
+    }
+    else {
+        [self.statusController beginActionWithTitle:SULocalizedString(@"Downloading update...", @"Take care not to overflow the status window.") maxProgressValue:0.0 statusText:nil];
+        [self.statusController setButtonTitle:SULocalizedString(@"Cancel", nil) target:self action:@selector(cancelDownload:) isDefault:NO];
+        [self.statusController setButtonEnabled:YES];
+        
+        if (createdStatusController) {
+            [self.statusController showWindow:self];
+        }
+        
+        [super downloadUpdate];
     }
     
-    [super downloadUpdate];
 }
 
 - (void)download:(NSURLDownload *)__unused download didReceiveResponse:(NSURLResponse *)response
