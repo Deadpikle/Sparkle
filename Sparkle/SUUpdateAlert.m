@@ -187,6 +187,17 @@ static NSString *const SUUpdateAlertTouchBarIndentifier = @"" SPARKLE_BUNDLE_IDE
             && !self.updateItem.isInformationOnlyUpdate;
 }
 
+
+- (void)hideSkipButton:(BOOL)hideSkipButton
+{
+    self.skipButton.hidden = hideSkipButton;
+}
+
+- (void)hideRemindMeLaterButton:(BOOL)hideRemindMeLaterButton
+{
+    self.laterButton.hidden = hideRemindMeLaterButton;
+}
+
 - (void)windowDidLoad
 {
     BOOL showReleaseNotes = [self showsReleaseNotes];

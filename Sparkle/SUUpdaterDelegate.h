@@ -126,6 +126,10 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
 - (BOOL)shouldSilentlyDownloadAppCastForUpdater:(SUUpdater*)updater;
 - (BOOL)updater:(SUUpdater *)updater shouldSilentlyDownloadItem:(SUAppcastItem *)item;
 - (void)updater:(SUUpdater *)updater finishedDownloadingItem:(SUAppcastItem *)item;
+
+
+- (BOOL)updater:(SUUpdater *)updater shouldHideSkipButtonForItem:(SUAppcastItem *)item;
+- (BOOL)updater:(SUUpdater *)updater shouldHideRemindMeLaterButtonForItem:(SUAppcastItem *)item;
 // TODO: hasFinishedDownload or something on the drivers so the UI can be adjusted accordingly
 
 /*!

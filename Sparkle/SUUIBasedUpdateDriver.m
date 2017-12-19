@@ -118,7 +118,12 @@
     }
     
     if ([super hasFinishedDownloadSuccessfully]) {
-        //self.updateAlert.
+        if ([[updater delegate] respondsToSelector:@selector(updater:shouldHideSkipButtonForItem:)]) {
+            [self.updateAlert hideSkipButton:[[updater delegate] updater:self.updater shouldHideSkipButtonForItem:self.updateItem]];
+        }
+        if ([[updater delegate] respondsToSelector:@selector(updater:shouldHideRemindMeLaterButtonForItem:)]) {
+            [self.updateAlert hideRemindMeLaterButton:[[updater delegate] updater:self.updater shouldHideRemindMeLaterButtonForItem:self.updateItem]];
+        }
     }
 }
 
