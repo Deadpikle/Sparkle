@@ -121,6 +121,8 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
  */
 - (void)updater:(SUUpdater *)updater didFindValidUpdate:(SUAppcastItem *)item;
 
+- (BOOL)updater:(SUUpdater *)updater shouldImmediatelyShowAlertWindowForItem:(SUAppcastItem *)item;
+
 /*!
  Called when a valid update is not found.
  

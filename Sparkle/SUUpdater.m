@@ -592,4 +592,11 @@ static NSString *escapeURLComponent(NSString *str) {
 
 - (NSBundle *)hostBundle { return [self.host bundle]; }
 
+-(void)showUpdateWindow {
+    if (self.driver && [self.driver isKindOfClass:[SUUIBasedUpdateDriver class]]) {
+        SUUIBasedUpdateDriver *uiDriver = (SUUIBasedUpdateDriver*)self.driver;
+        [uiDriver showUpdateAlert];
+    }
+}
+
 @end

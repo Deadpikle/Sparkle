@@ -230,6 +230,11 @@ SU_EXPORT @interface SUUpdater : NSObject
  */
 @property (readonly) BOOL updateInProgress;
 
+/*!
+ Only valid if current driver is SUUIBasedUpdateDriver
+ */
+-(void)showUpdateWindow;
+
 @end
 
 #endif
