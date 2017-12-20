@@ -266,14 +266,21 @@
     NSString *bundleIdentifier = self.host.bundle.bundleIdentifier;
     assert(bundleIdentifier != nil);
     
-    // Clear cache directory so that downloads can't possibly accumulate inside
-    NSString *appCachePath = [self appCachePath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:appCachePath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:appCachePath error:NULL];
-    }
-
     id<SUUpdaterPrivate> updater = self.updater;
-
+    
+    BOOL clearTmpDirectory = YES;
+    if ([[updater delegate] respondsToSelector:@selector(managesTmpDownloadDirectory)]) {
+        clearTmpDirectory = [[updater delegate] managesTmpDownloadDirectory];
+    }
+    
+    if (clearTmpDirectory) {
+        // Clear cache directory so that downloads can't possibly accumulate inside
+        NSString *appCachePath = [self appCachePath];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:appCachePath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:appCachePath error:NULL];
+        }
+    }
+    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[self.updateItem fileURL]];
     if (self.downloadsUpdatesInBackground) {
         request.networkServiceType = NSURLNetworkServiceTypeBackground;
@@ -286,17 +293,35 @@
                              withRequest:request];
     }
     
-    if ([SUOperatingSystem isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10, 9, 0}]) {
-        self.download = [[SPUDownloaderSession alloc] initWithDelegate:self];
+    NSString *desiredFilename = [NSString stringWithFormat:@"%@ %@", [self.host name], [self.updateItem versionString]];
+    BOOL isDownloaded = NO;
+    if ([updater delegate] && [[updater delegate] respondsToSelector:@selector(tmpDownloadPath)]) {
+        NSString *tmpDownloadDir = [[updater delegate] tmpDownloadPath];
+        tmpDownloadDir = [tmpDownloadDir stringByAppendingPathComponent:desiredFilename];
+        NSString *filePath = [tmpDownloadDir stringByAppendingPathComponent:[self.updateItem fileURL].path.lastPathComponent];
+        SUUpdateValidator *validator = [self validatorForPath:self.downloadPath];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:filePath] && validator.canValidate) {
+            // already downloaded; don't make them download again!
+            NSLog(@"[SUBasicUpdateDriver] Already downloaded!");
+            isDownloaded = YES;
+            self.downloadPath = filePath;
+        }
+    }
+    if (isDownloaded) {
+        [self downloaderDidFinishWithTemporaryDownloadData:nil];
     }
     else {
-        self.download = [[SPUDownloaderDeprecated alloc] initWithDelegate:self];
+        if ([SUOperatingSystem isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10, 9, 0}]) {
+            self.download = [[SPUDownloaderSession alloc] initWithDelegate:self];
+        }
+        else {
+            self.download = [[SPUDownloaderDeprecated alloc] initWithDelegate:self];
+        }
+        self.download.updaterDelegate = [updater delegate];
+        SPUURLRequest *urlRequest = [SPUURLRequest URLRequestWithRequest:request];
+        [self.download startPersistentDownloadWithRequest:urlRequest bundleIdentifier:bundleIdentifier desiredFilename:desiredFilename];
     }
-    SPUURLRequest *urlRequest = [SPUURLRequest URLRequestWithRequest:request];
-    NSString *desiredFilename = [NSString stringWithFormat:@"%@ %@", [self.host name], [self.updateItem versionString]];
-    [self.download startPersistentDownloadWithRequest:urlRequest bundleIdentifier:bundleIdentifier desiredFilename:desiredFilename];
 }
-
 
 - (void)downloaderDidSetDestinationName:(NSString *)destinationName temporaryDirectory:(NSString *)temporaryDirectory
 {
@@ -367,33 +392,15 @@
     
     [self abortUpdateWithError:[NSError errorWithDomain:SUSparkleErrorDomain code:SUDownloadError userInfo:userInfo]];
 }
-/*
-- (void)download:(NSURLDownload *)__unused d decideDestinationWithSuggestedFilename:(NSString *)name
-{
-    NSString *downloadFileName = [NSString stringWithFormat:@"%@ %@", [self.host name], [self.updateItem versionString]];
-    
-    NSString *appCachePath = [self appCachePath];
-    
-    self.tempDir = [appCachePath stringByAppendingPathComponent:downloadFileName];
-    int cnt = 1;
-	while ([[NSFileManager defaultManager] fileExistsAtPath:self.tempDir] && cnt <= 999)
-	{
-        self.tempDir = [appCachePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ %d", downloadFileName, cnt++]];
-    }
 
-    // Create the temporary directory if necessary.
-    BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:self.tempDir withIntermediateDirectories:YES attributes:nil error:NULL];
-	if (!success)
-	{
-        // Okay, something's really broken with this user's file structure.
-        [self.download cancel];
-        [self abortUpdateWithError:[NSError errorWithDomain:SUSparkleErrorDomain code:SUTemporaryDirectoryError userInfo:@{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Can't make a temporary directory for the update download at %@.", self.tempDir] }]];
-    }
-
-    self.downloadPath = [self.tempDir stringByAppendingPathComponent:name];
-    [self.download setDestination:self.downloadPath allowOverwrite:YES];
+- (SUUpdateValidator*)validatorForPath:(NSString*)path {
+    id<SUUpdaterPrivate> updater = self.updater;
+    id<SUUnarchiverProtocol> unarchiver = [SUUnarchiver unarchiverForPath:path updatingHostBundlePath:self.host.bundlePath decryptionPassword:updater.decryptionPassword];
+    BOOL needsPrevalidation = [[unarchiver class] unsafeIfArchiveIsNotValidated];
+    SUUpdateValidator *validator = [[SUUpdateValidator alloc] initWithDownloadPath:path dsaSignature:self.updateItem.DSASignature host:self.host performingPrevalidation:needsPrevalidation];
+    return validator;
 }
-*/
+
 - (void)extractUpdate
 {
     id<SUUpdaterPrivate> updater = self.updater;
@@ -408,7 +415,7 @@
         // Currently unsafe archives are the only case where we can prevalidate before extraction, but that could change in the future
         BOOL needsPrevalidation = [[unarchiver class] unsafeIfArchiveIsNotValidated];
         
-        self.updateValidator = [[SUUpdateValidator alloc] initWithDownloadPath:self.downloadPath dsaSignature:self.updateItem.DSASignature host:self.host performingPrevalidation:needsPrevalidation];
+        self.updateValidator = [self validatorForPath:self.downloadPath];
         
         success = self.updateValidator.canValidate;
     }

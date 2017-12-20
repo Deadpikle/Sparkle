@@ -42,7 +42,10 @@
 
     NSString *strippedSignature = [encodedSignature stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     NSData *signature = [[NSData alloc] initWithBase64Encoding:strippedSignature];
-    return [verifier verifyFileAtPath:path signature:signature];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        return [verifier verifyFileAtPath:path signature:signature];
+    }
+    return NO;
 }
 
 - (instancetype)initWithPublicKeyData:(NSData *)data

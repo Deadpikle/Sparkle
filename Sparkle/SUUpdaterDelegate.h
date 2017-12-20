@@ -121,17 +121,6 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
  */
 - (void)updater:(SUUpdater *)updater didFindValidUpdate:(SUAppcastItem *)item;
 
-- (BOOL)updater:(SUUpdater *)updater shouldImmediatelyShowAlertWindowForItem:(SUAppcastItem *)item;
-
-- (BOOL)shouldSilentlyDownloadAppCastForUpdater:(SUUpdater*)updater;
-- (BOOL)updater:(SUUpdater *)updater shouldSilentlyDownloadItem:(SUAppcastItem *)item;
-- (void)updater:(SUUpdater *)updater finishedDownloadingItem:(SUAppcastItem *)item;
-
-
-- (BOOL)updater:(SUUpdater *)updater shouldHideSkipButtonForItem:(SUAppcastItem *)item;
-- (BOOL)updater:(SUUpdater *)updater shouldHideRemindMeLaterButtonForItem:(SUAppcastItem *)item;
-// TODO: hasFinishedDownload or something on the drivers so the UI can be adjusted accordingly
-
 /*!
  Called when a valid update is not found.
  
@@ -286,6 +275,21 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
  \param error The error that caused the abort
  */
 - (void)updater:(SUUpdater *)updater didAbortWithError:(NSError *)error;
+
+
+- (BOOL)updater:(SUUpdater *)updater shouldImmediatelyShowAlertWindowForItem:(SUAppcastItem *)item;
+
+- (BOOL)shouldSilentlyDownloadAppCastForUpdater:(SUUpdater*)updater;
+- (BOOL)updater:(SUUpdater *)updater shouldSilentlyDownloadItem:(SUAppcastItem *)item;
+- (void)updater:(SUUpdater *)updater finishedDownloadingItem:(SUAppcastItem *)item;
+
+
+- (BOOL)updater:(SUUpdater *)updater shouldHideSkipButtonForItem:(SUAppcastItem *)item;
+- (BOOL)updater:(SUUpdater *)updater shouldHideRemindMeLaterButtonForItem:(SUAppcastItem *)item;
+// TODO: hasFinishedDownload or something on the drivers so the UI can be adjusted accordingly
+
+- (BOOL)managesTmpDownloadDirectory;
+- (NSString*)tmpDownloadPath;
 
 @end
 

@@ -12,6 +12,7 @@
 #import "SPULocalCacheDirectory.h"
 #import "SUErrors.h"
 #import "SPUDownloadData.h"
+#import "SUUpdaterDelegate.h"
 
 @interface SPUDownloaderSession () <NSURLSessionDelegate>
 
@@ -76,11 +77,22 @@
     else
     {
         // Remove our old caches path so we don't start accumulating files in there
-        NSString *rootPersistentDownloadCachePath = [[SPULocalCacheDirectory cachePathForBundleIdentifier:self.bundleIdentifier] stringByAppendingPathComponent:@"PersistentDownloads"];
+        NSString *tempDir = @"";
+        if (self.updaterDelegate && [self.updaterDelegate respondsToSelector:@selector(tmpDownloadPath)]) {
+            tempDir = [self.updaterDelegate tmpDownloadPath];
+            if ([self.updaterDelegate respondsToSelector:@selector(managesTmpDownloadDirectory)]) {
+                BOOL managesTmpDirectory = [self.updaterDelegate managesTmpDownloadDirectory];
+                if (!managesTmpDirectory) {
+                    [SPULocalCacheDirectory removeOldItemsInDirectory:tempDir];
+                }
+            }
+        }
+        else {
+            NSString *rootPersistentDownloadCachePath = [[SPULocalCacheDirectory cachePathForBundleIdentifier:self.bundleIdentifier] stringByAppendingPathComponent:@"PersistentDownloads"];
+            [SPULocalCacheDirectory removeOldItemsInDirectory:rootPersistentDownloadCachePath];
+            tempDir = [SPULocalCacheDirectory createUniqueDirectoryInDirectory:rootPersistentDownloadCachePath];
+        }
         
-        [SPULocalCacheDirectory removeOldItemsInDirectory:rootPersistentDownloadCachePath];
-        
-        NSString *tempDir = [SPULocalCacheDirectory createUniqueDirectoryInDirectory:rootPersistentDownloadCachePath];
         if (tempDir == nil)
         {
             // Okay, something's really broken with this user's file structure.
