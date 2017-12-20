@@ -297,14 +297,15 @@
     BOOL isDownloaded = NO;
     if ([updater delegate] && [[updater delegate] respondsToSelector:@selector(tmpDownloadPath)]) {
         NSString *tmpDownloadDir = [[updater delegate] tmpDownloadPath];
-        tmpDownloadDir = [tmpDownloadDir stringByAppendingPathComponent:desiredFilename];
-        NSString *filePath = [tmpDownloadDir stringByAppendingPathComponent:[self.updateItem fileURL].path.lastPathComponent];
+        NSString *tmpDownloadDirWithFileName = [tmpDownloadDir stringByAppendingPathComponent:desiredFilename];
+        NSString *filePath = [tmpDownloadDirWithFileName stringByAppendingPathComponent:[self.updateItem fileURL].path.lastPathComponent];
         SUUpdateValidator *validator = [self validatorForPath:self.downloadPath];
         BOOL doesFileExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
         if (doesFileExist && validator.canValidate) {
             // already downloaded; don't make them download again!
             NSLog(@"[SUBasicUpdateDriver] Already downloaded!");
             isDownloaded = YES;
+            self.tempDir = tmpDownloadDir;
             self.downloadPath = filePath;
         }
         else if (doesFileExist) {
@@ -657,7 +658,12 @@
 
 - (void)cleanUpDownload
 {
-    if (self.tempDir != nil) // tempDir contains downloadPath, so we implicitly delete both here.
+    id<SUUpdaterPrivate> updater = self.updater;
+    BOOL shouldCleanup = YES;
+    if ([updater delegate] && [[updater delegate] respondsToSelector:@selector(managesTmpDownloadDirectory)]) {
+        shouldCleanup = [[updater delegate] managesTmpDownloadDirectory];
+    }
+    if (self.tempDir != nil && shouldCleanup) // tempDir contains downloadPath, so we implicitly delete both here.
     {
         BOOL success = NO;
         NSError *error = nil;

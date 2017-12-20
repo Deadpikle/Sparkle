@@ -157,7 +157,7 @@
 
 - (void)updateAlertFinishedWithChoice:(SUUpdateAlertChoice)choice
 {
-    self.updateAlert = nil;
+    //self.updateAlert = nil;
     [self.host setObject:nil forUserDefaultsKey:SUSkippedVersionKey];
     switch (choice) {
         case SUInstallUpdateChoice:
