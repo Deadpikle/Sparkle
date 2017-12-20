@@ -413,7 +413,6 @@
         success = NO;
     } else {
         // Currently unsafe archives are the only case where we can prevalidate before extraction, but that could change in the future
-        BOOL needsPrevalidation = [[unarchiver class] unsafeIfArchiveIsNotValidated];
         
         self.updateValidator = [self validatorForPath:self.downloadPath];
         

@@ -187,6 +187,8 @@
         self.statusController = [[SUStatusController alloc] initWithHost:self.host];
         createdStatusController = YES;
     }
+    // need to set button action so it looks normal, but button is disabled anyway, so it doesn't really matter other than appearances
+    [self.statusController setButtonTitle:SULocalizedString(@"Cancel", nil) target:self action:@selector(cancelDownload:) isDefault:NO];
     
     if ([super hasFinishedDownloadSuccessfully]) {
         [self extractUpdate];
