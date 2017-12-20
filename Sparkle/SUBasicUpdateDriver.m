@@ -661,7 +661,7 @@
     id<SUUpdaterPrivate> updater = self.updater;
     BOOL shouldCleanup = YES;
     if ([updater delegate] && [[updater delegate] respondsToSelector:@selector(managesTmpDownloadDirectory)]) {
-        shouldCleanup = [[updater delegate] managesTmpDownloadDirectory];
+        shouldCleanup = ![[updater delegate] managesTmpDownloadDirectory];
     }
     if (self.tempDir != nil && shouldCleanup) // tempDir contains downloadPath, so we implicitly delete both here.
     {

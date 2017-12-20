@@ -248,7 +248,7 @@ static NSString *const SUUpdaterDefaultsObservationContext = @"SUUpdaterDefaults
 {
 	if ([note object] == self.driver && [self.driver finished])
 	{
-        self.driver = nil;
+        //self.driver = nil;
         [self updateLastUpdateCheckDate];
         [self scheduleNextUpdateCheck];
     }
