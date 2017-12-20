@@ -300,11 +300,15 @@
         tmpDownloadDir = [tmpDownloadDir stringByAppendingPathComponent:desiredFilename];
         NSString *filePath = [tmpDownloadDir stringByAppendingPathComponent:[self.updateItem fileURL].path.lastPathComponent];
         SUUpdateValidator *validator = [self validatorForPath:self.downloadPath];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:filePath] && validator.canValidate) {
+        BOOL doesFileExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+        if (doesFileExist && validator.canValidate) {
             // already downloaded; don't make them download again!
             NSLog(@"[SUBasicUpdateDriver] Already downloaded!");
             isDownloaded = YES;
             self.downloadPath = filePath;
+        }
+        else if (doesFileExist) {
+            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         }
     }
     if (isDownloaded) {
