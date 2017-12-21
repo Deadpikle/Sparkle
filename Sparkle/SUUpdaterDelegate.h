@@ -291,6 +291,8 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
 - (BOOL)managesTmpDownloadDirectory;
 - (NSString*)tmpDownloadPath;
 
+//- (BOOL)keepAppCastDataForLater;
+
 @end
 
 NS_ASSUME_NONNULL_END

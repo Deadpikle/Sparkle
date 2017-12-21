@@ -293,25 +293,7 @@
                              withRequest:request];
     }
     
-    NSString *desiredFilename = [NSString stringWithFormat:@"%@ %@", [self.host name], [self.updateItem versionString]];
-    BOOL isDownloaded = NO;
-    if ([updater delegate] && [[updater delegate] respondsToSelector:@selector(tmpDownloadPath)]) {
-        NSString *tmpDownloadDir = [[updater delegate] tmpDownloadPath];
-        NSString *tmpDownloadDirWithFileName = [tmpDownloadDir stringByAppendingPathComponent:desiredFilename];
-        NSString *filePath = [tmpDownloadDirWithFileName stringByAppendingPathComponent:[self.updateItem fileURL].path.lastPathComponent];
-        SUUpdateValidator *validator = [self validatorForPath:self.downloadPath];
-        BOOL doesFileExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
-        if (doesFileExist && validator.canValidate) {
-            // already downloaded; don't make them download again!
-            NSLog(@"[SUBasicUpdateDriver] Already downloaded!");
-            isDownloaded = YES;
-            self.tempDir = tmpDownloadDir;
-            self.downloadPath = filePath;
-        }
-        else if (doesFileExist) {
-            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-        }
-    }
+    BOOL isDownloaded = [self checkIfItemDownloadedAlready];
     if (isDownloaded) {
         [self downloaderDidFinishWithTemporaryDownloadData:nil];
     }
@@ -324,6 +306,7 @@
         }
         self.download.updaterDelegate = [updater delegate];
         SPUURLRequest *urlRequest = [SPUURLRequest URLRequestWithRequest:request];
+        NSString *desiredFilename = [self getDesiredFileName];
         [self.download startPersistentDownloadWithRequest:urlRequest bundleIdentifier:bundleIdentifier desiredFilename:desiredFilename];
     }
 }
@@ -361,15 +344,51 @@
     if (shouldExtract) {
         [self extractUpdate];
     }
-    // else we will tell user it is downloaded and let them handle it
-    self.didSuccessfullyFinishDownload = YES;
+    else {
+        // else we will tell user it is downloaded and let them handle it
+        self.didSuccessfullyFinishDownload = YES;
+        [self setValue:@YES forKey:@"finished"];
+    }
     if ([[updater delegate] respondsToSelector:@selector(updater:finishedDownloadingItem:)]) {
-        [[updater delegate] updater:self.updater finishedDownloadingItem:self.updateItem];       
+        [[updater delegate] updater:self.updater finishedDownloadingItem:self.updateItem];
     }
 }
 
--(BOOL)hasFinishedDownloadSuccessfully {
+-(BOOL)hasFinishedDownloadSuccessfully
+{
     return self.didSuccessfullyFinishDownload;
+}
+
+-(NSString*)getDesiredFileName
+{
+    return [NSString stringWithFormat:@"%@ %@", [self.host name], [self.updateItem versionString]];
+}
+
+-(BOOL)checkIfItemDownloadedAlready
+{
+    id<SUUpdaterPrivate> updater = self.updater;
+    NSString *desiredFilename = [self getDesiredFileName];
+    BOOL isDownloaded = NO;
+    if ([updater delegate] && [[updater delegate] respondsToSelector:@selector(tmpDownloadPath)]) {
+        NSString *tmpDownloadDir = [[updater delegate] tmpDownloadPath];
+        NSString *tmpDownloadDirWithFileName = [tmpDownloadDir stringByAppendingPathComponent:desiredFilename];
+        NSString *fileURLPath = [self.updateItem fileURL].path;
+        NSString *filePath = [tmpDownloadDirWithFileName stringByAppendingPathComponent:fileURLPath.lastPathComponent];
+        SUUpdateValidator *validator = [self validatorForPath:self.downloadPath];
+        BOOL doesFileExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+        if (doesFileExist && validator.canValidate) {
+            // already downloaded; don't make them download again!
+            NSLog(@"[SUBasicUpdateDriver] Already downloaded!");
+            isDownloaded = YES;
+            self.tempDir = tmpDownloadDir;
+            self.downloadPath = filePath;
+            self.didSuccessfullyFinishDownload = YES;
+        }
+        else if (doesFileExist) {
+            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+        }
+    }
+    return isDownloaded;
 }
 
 - (void)downloaderDidFailWithError:(NSError *)error
@@ -717,6 +736,10 @@
     }
 
     [self abortUpdate];
+}
+
+-(void)overrideAppCastItem:(SUAppcastItem*)item {
+    self.updateItem = item;
 }
 
 @end

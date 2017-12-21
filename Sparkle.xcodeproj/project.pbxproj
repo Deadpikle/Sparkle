@@ -63,6 +63,8 @@
 		34074BA31FEABFD2001CB3A5 /* SPUDownloaderSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074BA11FEABFD2001CB3A5 /* SPUDownloaderSession.m */; };
 		34074BA71FEAC417001CB3A5 /* SPUDownloaderDeprecated.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074BA51FEAC417001CB3A5 /* SPUDownloaderDeprecated.h */; };
 		34074BA81FEAC417001CB3A5 /* SPUDownloaderDeprecated.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074BA61FEAC417001CB3A5 /* SPUDownloaderDeprecated.m */; };
+		34074BAB1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074BA91FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.h */; };
+		34074BAC1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074BAA1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.m */; };
 		3772FEA913DE0B6B00F79537 /* SUVersionDisplayProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 3772FEA813DE0B6B00F79537 /* SUVersionDisplayProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55C14BD4136EEFCE00649790 /* Autoupdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 55C14BD3136EEFCE00649790 /* Autoupdate.m */; };
 		55C14BD9136EF00C00649790 /* SUStatus.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55C14BD8136EF00C00649790 /* SUStatus.xib */; };
@@ -549,6 +551,8 @@
 		34074BA41FEAC0BC001CB3A5 /* SPUDownloader_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPUDownloader_Private.h; sourceTree = "<group>"; };
 		34074BA51FEAC417001CB3A5 /* SPUDownloaderDeprecated.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPUDownloaderDeprecated.h; sourceTree = "<group>"; };
 		34074BA61FEAC417001CB3A5 /* SPUDownloaderDeprecated.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPUDownloaderDeprecated.m; sourceTree = "<group>"; };
+		34074BA91FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SUAlreadyDownloadedUpdateDriver.h; sourceTree = "<group>"; };
+		34074BAA1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SUAlreadyDownloadedUpdateDriver.m; sourceTree = "<group>"; };
 		3772FEA813DE0B6B00F79537 /* SUVersionDisplayProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SUVersionDisplayProtocol.h; sourceTree = "<group>"; };
 		4607BEA21948443800EF8DA4 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Sparkle.strings; sourceTree = "<group>"; };
 		4607BEA31948443800EF8DA4 /* nb */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = nb; path = nb.lproj/SUAutomaticUpdateAlert.xib; sourceTree = "<group>"; };
@@ -1330,6 +1334,8 @@
 		61CFB2C20E38496B007A1735 /* Drivers */ = {
 			isa = PBXGroup;
 			children = (
+				34074BA91FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.h */,
+				34074BAA1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.m */,
 				61B93B250DD0FDD300DCD2F8 /* SUAutomaticUpdateDriver.h */,
 				61B93B260DD0FDD300DCD2F8 /* SUAutomaticUpdateDriver.m */,
 				61F83F6F0DBFE137006FDD30 /* SUBasicUpdateDriver.h */,
@@ -1455,6 +1461,7 @@
 				34074B911FEABD08001CB3A5 /* SPUDownloader.h in Headers */,
 				722954C41D04E66F00ECF9CA /* SUFileOperationConstants.h in Headers */,
 				767B61AC1972D488004E0C3C /* SUGuidedPackageInstaller.h in Headers */,
+				34074BAB1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.h in Headers */,
 				61EF67590E25C5B400F754E0 /* SUHost.h in Headers */,
 				618FA5010DAE88B40026945C /* SUInstaller.h in Headers */,
 				72316BD61E0DBF730039EFD9 /* SULocalizations.h in Headers */,
@@ -2074,6 +2081,7 @@
 				61B078CF15A5FB6100600039 /* SUCodeSigningVerifier.m in Sources */,
 				61299A6009CA6EB100B7442F /* SUConstants.m in Sources */,
 				6102FE4B0E07803800F85D09 /* SUDiskImageUnarchiver.m in Sources */,
+				34074BAC1FEB0E5F001CB3A5 /* SUAlreadyDownloadedUpdateDriver.m in Sources */,
 				61299A3009CA2DAB00B7442F /* SUDSAVerifier.m in Sources */,
 				7275F9C21B5F1F2900B1D19E /* SUFileManager.m in Sources */,
 				722954C51D04E66F00ECF9CA /* SUFileOperationConstants.m in Sources */,

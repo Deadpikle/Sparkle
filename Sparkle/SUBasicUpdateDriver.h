@@ -57,6 +57,9 @@
 
 -(BOOL)hasFinishedDownloadSuccessfully;
 
+-(void)overrideAppCastItem:(SUAppcastItem*)item;
+-(BOOL)checkIfItemDownloadedAlready;
+
 @end
 
 #endif

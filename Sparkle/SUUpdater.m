@@ -18,6 +18,7 @@
 #import "SUProbingUpdateDriver.h"
 #import "SUUserInitiatedUpdateDriver.h"
 #import "SUScheduledUpdateDriver.h"
+#import "SUAlreadyDownloadedUpdateDriver.h"
 #import "SUConstants.h"
 #import "SULog.h"
 #import "SUCodeSigningVerifier.h"
@@ -248,7 +249,7 @@ static NSString *const SUUpdaterDefaultsObservationContext = @"SUUpdaterDefaults
 {
 	if ([note object] == self.driver && [self.driver finished])
 	{
-        //self.driver = nil;
+        self.driver = nil;
         [self updateLastUpdateCheckDate];
         [self scheduleNextUpdateCheck];
     }
@@ -338,7 +339,7 @@ static NSString *const SUUpdaterDefaultsObservationContext = @"SUUpdaterDefaults
 
 - (void)checkForUpdatesWithDriver:(SUUpdateDriver *)d
 {
-	if ([self updateInProgress]) { return; }
+    if ([self updateInProgress]) { return; } // this is returning true :(
 	if (self.checkTimer) { [self.checkTimer invalidate]; self.checkTimer = nil; }		// Timer is non-repeating, may have invalidated itself, so we had to retain it.
 
     [self updateLastUpdateCheckDate];
@@ -596,6 +597,12 @@ static NSString *escapeURLComponent(NSString *str) {
     if (self.driver && [self.driver isKindOfClass:[SUUIBasedUpdateDriver class]]) {
         [(SUUIBasedUpdateDriver*)self.driver showUpdateAlert];
     }
+}
+
+-(void)showUpdateWindowForDownloadedAppCastItem:(SUAppcastItem*)item {
+    SUAlreadyDownloadedUpdateDriver *alreadyDownloadedDriver = [[SUAlreadyDownloadedUpdateDriver alloc] initWithUpdater:self];
+    [alreadyDownloadedDriver setAppCastItem:item];
+    [self checkForUpdatesWithDriver:alreadyDownloadedDriver];
 }
 
 -(void)downloadCurrentUpdate {
