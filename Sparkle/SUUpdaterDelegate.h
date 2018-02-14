@@ -282,6 +282,7 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
 - (BOOL)shouldSilentlyDownloadAppCastForUpdater:(SUUpdater*)updater;
 - (BOOL)updater:(SUUpdater *)updater shouldSilentlyDownloadItem:(SUAppcastItem *)item;
 - (void)updater:(SUUpdater *)updater finishedDownloadingItem:(SUAppcastItem *)item;
+- (BOOL)updater:(SUUpdater *)updater shouldInstallAfterSilentDownloadOfItem:(SUAppcastItem *)item;
 
 
 - (BOOL)updater:(SUUpdater *)updater shouldHideSkipButtonForItem:(SUAppcastItem *)item;

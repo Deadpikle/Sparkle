@@ -335,8 +335,8 @@
     id<SUUpdaterPrivate> updater = self.updater;
 
     BOOL shouldExtract = YES;
-    if ([[updater delegate] respondsToSelector:@selector(updater:shouldSilentlyDownloadItem:)]) {
-        if ([[updater delegate] updater:self.updater shouldSilentlyDownloadItem:self.updateItem]) {
+    if ([[updater delegate] respondsToSelector:@selector(updater:shouldInstallAfterSilentDownloadOfItem:)]) {
+        if (![[updater delegate] updater:self.updater shouldInstallAfterSilentDownloadOfItem:self.updateItem]) {
             shouldExtract = NO;
         }
     }
